@@ -42,6 +42,14 @@ STOPWORDS = {
 # A few spoken forms that differ from how the catalogue names things.
 SYNONYMS = {"eletroacustico": "eletrico", "eletroacustica": "eletrico", "eletrica": "eletrico", "acustico": ""}
 
+def mentions_catalogue(text: str, store: Store) -> bool:
+    """True if the message names an instrument category or a brand we carry."""
+    query = norm(text)
+    words = {w for group in CATEGORY_WORDS.values() for w in group}
+    words |= {norm(p.name).split()[0] for p in store.products.values()} - {"music", "bateria", "teclado"}
+    return any(re.search(rf"\b{re.escape(w)}\b", query) for w in words)
+
+
 ORDER_STATUS = {
     "pending": "pendente",
     "confirmed": "confirmado (ainda sem envio)",
@@ -259,7 +267,7 @@ class Toolbox:
         else:
             digits = re.sub(r"\D", "", contact)
             if len(digits) < 8:
-                return {"verificado": False, "mensagem": "Peça o telefone com DDD ou o e-mail usado na compra."}
+                return {"verificado": False, "mensagem": "Informe o telefone com DDD ou o e-mail usado na compra."}
             matches = []
             for customer in self.store.customers.values():
                 phone = re.sub(r"\D", "", customer.phone)
@@ -270,11 +278,11 @@ class Toolbox:
         if len(matches) > 1:
             return {
                 "verificado": False,
-                "mensagem": "Esse contato está em mais de um cadastro. Peça o telefone com DDD para confirmar.",
+                "mensagem": "Esse contato aparece em mais de um cadastro. Para confirmar, informe o telefone com DDD.",
             }
         return {
             "verificado": False,
-            "mensagem": "Não encontrei cadastro com esse contato. Peça para o cliente conferir o telefone ou e-mail usado na compra.",
+            "mensagem": "Não encontrei cadastro com esse contato. Confira o telefone com DDD ou o e-mail usado na compra.",
         }
 
     def _order_for(self, contato: str, numero_pedido) -> tuple[Customer, Order] | dict:
@@ -380,11 +388,8 @@ class Toolbox:
                     "frete de devolução por conta da loja",
                 ]
             else:
-                result["outras_opcoes"] = [
-                    f"se houver defeito de fabricação: troca direta na loja até {defect_until:%d/%m/%Y} (30 dias da compra, seção 4.2)",
-                    f"garantia legal contra defeitos até {legal_until:%d/%m/%Y} (90 dias do recebimento, seção 8.1)",
-                    "garantia do fabricante: de 6 meses a 2 anos, conforme o certificado do produto (seção 8.2)",
-                ]
+                result["outras_opcoes"], result["prazos_ja_encerrados"] = self._open_and_closed(
+                    today, defect_until, legal_until)
             return result
 
         if motivo.startswith("defeito"):
@@ -411,6 +416,20 @@ class Toolbox:
                                   "diferença de valor cobrada ou reembolsada"]}
 
         return {**base, "erro": "motivo deve ser 'arrependimento', 'defeito' ou 'troca_preferencia'"}
+
+    @staticmethod
+    def _open_and_closed(today, defect_until, legal_until) -> tuple[list[str], list[str]]:
+        """Split defect/warranty options into still-open and already-closed, so an expired
+        deadline is never presented as available."""
+        open_, closed = [], []
+        exchange = "troca direta na loja por defeito de fabricação (30 dias da compra, seção 4.2)"
+        legal = "garantia legal contra defeitos (90 dias do recebimento, seção 8.1)"
+        (open_ if today <= defect_until else closed).append(
+            f"{exchange}: {'vale até' if today <= defect_until else 'encerrou em'} {defect_until:%d/%m/%Y}")
+        (open_ if today <= legal_until else closed).append(
+            f"{legal}: {'vale até' if today <= legal_until else 'encerrou em'} {legal_until:%d/%m/%Y}")
+        open_.append("garantia do fabricante: de 6 meses a 2 anos, conforme o certificado do produto (seção 8.2)")
+        return open_, closed
 
     # ------------------------------------------------------------------ handoff
     def escalate_to_human(self, motivo: str, resumo: str, contato: str | None = None) -> dict:

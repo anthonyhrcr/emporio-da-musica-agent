@@ -31,6 +31,8 @@ def to_markdown(title: str, turns: list[Turn], settings: Settings, note: str | N
                 lines += [f"`{call.name}({json.dumps(call.arguments, ensure_ascii=False)})`", "",
                           "```json", result, "```", ""]
             lines += ["</details>", ""]
+        if turn.guardrail:
+            lines += [f"🛡️ *Guardrail: {turn.guardrail}.*", ""]
         reply = turn.reply.replace("\n", "\n> ")
         lines += [f"**Lia:**", "", f"> {reply}", ""]
     return "\n".join(lines)

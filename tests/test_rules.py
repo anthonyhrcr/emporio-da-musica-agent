@@ -159,6 +159,13 @@ def test_regret_window_expired_but_legal_warranty_still_valid(tools):
     assert any("18/05/2026" in option for option in result["outras_opcoes"])  # 17/02 + 90 days
 
 
+def test_expired_deadline_is_never_offered_as_open(tools):
+    # Bug found in the first example run: "troca até 05/03" was offered on 25/03.
+    result = tools.check_return_options("leticia.rocha@jmail.com", "7", "arrependimento")
+    assert not any("05/03/2026" in option for option in result["outras_opcoes"])
+    assert any("encerrou em 05/03/2026" in option for option in result["prazos_ja_encerrados"])
+
+
 def test_defect_after_30_days_goes_to_warranty(tools):
     result = tools.check_return_options("leticia.rocha@jmail.com", "7", "defeito")
     assert "garantia legal" in result["caminho"]

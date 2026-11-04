@@ -63,6 +63,8 @@ def main() -> None:
         if args.debug:
             for call in turn.tool_calls:
                 print(f"  🔧 {call.name}({call.arguments})")
+            if turn.guardrail:
+                print(f"  🛡️ {turn.guardrail}")
         print(f"\nLia › {turn.reply}\n")
     _save(agent)
 
