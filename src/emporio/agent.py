@@ -12,9 +12,12 @@ runs line by line (README, section 6):
    a tool result, the system prompt or the customer's own messages. The model's
    earlier replies don't count as a source: that is how a mis-copied price spreads.
 
-Either problem gets one retry with a specific instruction. Ollama ignores
-tool_choice="required", so the retry is an instruction, not a forced call. If the
-problem persists, the customer gets an honest "I couldn't confirm that" instead.
+When the model skipped a lookup whose call is unambiguous ("abre sábado?" -> the
+hours section; "tem saxofone?" -> a catalogue search), the code makes that lookup
+itself and the model answers again with the data in context. This doesn't depend on
+a small model obeying an instruction (Ollama also ignores tool_choice="required").
+Otherwise the model gets one retry with a specific instruction. If the problem
+persists, the customer gets an honest "I couldn't confirm that" instead.
 """
 from __future__ import annotations
 
@@ -51,39 +54,52 @@ NUDGE_VALUES = (
     "ferramentas; consulte de novo se precisar. Não faça contas."
 )
 
-# topic -> (stems that signal it in the customer's message, tool calls that answer it, hint for the retry)
-TOPICS: dict[str, tuple[tuple[str, ...], set[str], str]] = {
+Lookup = tuple[str, dict]  # (tool name, arguments) the code can run on its own
+
+def _policy(section: str) -> Lookup:
+    return ("get_policy", {"secao": section})
+
+# topic -> (stems that signal it in the customer's message, tool calls that answer it,
+#           hint for the retry, lookup the code can run itself when the model skipped it)
+TOPICS: dict[str, tuple[tuple[str, ...], set[str], str, Lookup | None]] = {
     "horário de funcionamento": (
         ("horario", "abre", "abrir", "aberto", "aberta", "fecha", "sabado", "domingo", "feriado", "funciona"),
-        {"get_policy:horario_de_funcionamento"}, "get_policy('horario_de_funcionamento')"),
+        {"get_policy:horario_de_funcionamento"}, "get_policy('horario_de_funcionamento')",
+        _policy("horario_de_funcionamento")),
     "endereço e contato da loja": (
         ("endereco", "onde fica", "localiza", "whatsapp", "cnpj"),
-        {"get_policy:sobre_a_loja_e_contato"}, "get_policy('sobre_a_loja_e_contato')"),
+        {"get_policy:sobre_a_loja_e_contato"}, "get_policy('sobre_a_loja_e_contato')",
+        _policy("sobre_a_loja_e_contato")),
     "pagamento": (
         ("pagamento", "pagar", "pix", "parcel", "cartao", "credito", "debito", "boleto"),
         {"get_policy:formas_de_pagamento_e_parcelamento", "get_product_details"},
-        "get_product_details (para um produto) ou get_policy('formas_de_pagamento_e_parcelamento')"),
+        "get_product_details (para um produto) ou get_policy('formas_de_pagamento_e_parcelamento')",
+        _policy("formas_de_pagamento_e_parcelamento")),
     "trocas, devolução e garantia": (
         ("troca", "devol", "reembols", "arrepend", "defeito", "garantia"),
         {"get_policy:trocas_e_devolucoes", "get_policy:garantia", "check_return_options"},
-        "check_return_options (para um pedido) ou get_policy('trocas_e_devolucoes')"),
+        "check_return_options (para um pedido) ou get_policy('trocas_e_devolucoes')",
+        _policy("trocas_e_devolucoes")),
     "frete e entrega": (
         ("frete", "entrega", "envio", "enviar"),
-        {"get_policy:frete_e_entregas", "lookup_orders"}, "get_policy('frete_e_entregas')"),
+        {"get_policy:frete_e_entregas", "lookup_orders"}, "get_policy('frete_e_entregas')",
+        _policy("frete_e_entregas")),
     "preço, estoque e promoções": (
         ("preco", "custa", "valor", "estoque", "disponive", "promoc", "desconto"),
         {"search_products", "get_product_details", "list_active_promotions", "get_policy:promocoes_e_descontos"},
-        "search_products ou get_product_details"),
+        "search_products ou get_product_details", None),  # needs to know which product
     "pedido": (
         ("pedido", "rastre", "cancel"),
         {"lookup_orders", "check_return_options", "escalate_to_human"},
-        "lookup_orders (com o telefone ou e-mail do cliente)"),
+        "lookup_orders (com o telefone ou e-mail do cliente)", None),  # needs the customer's contact
 }
 
 _THINK = re.compile(r"<think>.*?</think>", re.S)
 _MONEY = re.compile(r"R\$\s*(\d[\d.]*(?:,\d{1,2})?)")
 _DATE = re.compile(r"\b\d{2}/\d{2}/\d{4}\b")
 _PHONE = re.compile(r"\(?\b\d{2}\)?\s?\d{4,5}-\d{4}\b")
+_STREET = re.compile(r"\b(?:rua|avenida|av\.|alameda|travessa|rodovia|praça|praca)\s[^\n,;]{3,60}?,?\s*(?:n[ºo°.]?\s*)?\d{1,5}\b",
+                     re.I)
 # A reply that only asks for the customer's contact is the correct first step for orders.
 _ASKS_FOR_CONTACT = re.compile(
     r"(seu|sua|informe|informar|preciso|passar|passa|me diz|me dizer|confirmar)\W.{0,40}(telefone|e-?mail)", re.S
@@ -95,6 +111,7 @@ class ToolCall:
     name: str
     arguments: dict
     result: dict
+    automatic: bool = False  # made by the guardrail, not chosen by the model
 
 
 @dataclass
@@ -109,7 +126,7 @@ def topics_in(text: str) -> list[str]:
     query = norm(text)
     words = re.findall(r"[a-z0-9]+", query)
     return [
-        topic for topic, (stems, _, _) in TOPICS.items()
+        topic for topic, (stems, *_) in TOPICS.items()
         if any((st in query) if " " in st else any(w.startswith(st) for w in words) for st in stems)
     ]
 
@@ -125,14 +142,21 @@ def _amount(raw: str) -> Decimal | None:
         return None
 
 
+def _compact(text: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", norm(text).replace("º", "").replace("°", ""))
+
+
 def untraceable_values(reply: str, sources: str) -> list[str]:
-    """R$ values, full dates and phone numbers in the reply that appear nowhere in the sources."""
+    """R$ values, full dates, phone numbers and street addresses in the reply that appear nowhere in the sources."""
     known_money = {_amount(m) for m in _MONEY.findall(sources)}
     known_dates = set(_DATE.findall(sources))
     known_phones = {re.sub(r"\D", "", m) for m in _PHONE.findall(sources)}
+    compact_sources = _compact(sources)
     missing = [f"R$ {raw}" for raw in _MONEY.findall(reply) if _amount(raw) not in known_money]
     missing += [d for d in _DATE.findall(reply) if d not in known_dates]
     missing += [p for p in _PHONE.findall(reply) if re.sub(r"\D", "", p) not in known_phones]
+    missing += [a.strip() for a in _STREET.findall(reply)
+                if _compact(re.sub(r"\bn[ºo°.]?\s*(?=\d)", "", a, flags=re.I)) not in compact_sources]
     return list(dict.fromkeys(missing))
 
 
@@ -187,14 +211,28 @@ class Agent:
                 evidence.append(message["content"])
         return keys, norm(" ".join(evidence))
 
-    def missing_lookups(self, user_text: str) -> list[tuple[str, str]]:
-        """(topic, how to look it up) for everything the message asks about that wasn't consulted yet."""
+    def missing_lookups(self, user_text: str) -> list[tuple[str, str, Lookup | None]]:
+        """(topic, hint, automatic lookup) for everything the message asks about that wasn't consulted yet."""
         keys, evidence = self._consulted()
-        missing = [(topic, TOPICS[topic][2]) for topic in topics_in(user_text) if not keys & TOPICS[topic][1]]
+        missing = [(topic, TOPICS[topic][2], TOPICS[topic][3])
+                   for topic in topics_in(user_text) if not keys & TOPICS[topic][1]]
         for word, proof in catalogue_mentions(user_text, self.store).items():
             if proof not in evidence:
-                missing.append((word, f"search_products('{word}')"))
+                missing.append((word, f"search_products('{word}')", ("search_products", {"termo": word})))
         return missing
+
+    def _run_lookups(self, lookups: list[Lookup], turn: Turn) -> None:
+        """Run lookups on the model's behalf and put them in the history as ordinary tool calls."""
+        unique = list({json.dumps(lookup, ensure_ascii=False, sort_keys=True): lookup for lookup in lookups}.values())
+        calls = [{"id": f"auto_{len(self.history)}_{i}", "type": "function",
+                  "function": {"name": name, "arguments": json.dumps(arguments, ensure_ascii=False)}}
+                 for i, (name, arguments) in enumerate(unique)]
+        self.history.append({"role": "assistant", "content": "", "tool_calls": calls})
+        for call, (name, arguments) in zip(calls, unique):
+            result = self.toolbox.call(name, arguments)
+            turn.tool_calls.append(ToolCall(name, arguments, result, automatic=True))
+            self.history.append({"role": "tool", "tool_call_id": call["id"],
+                                 "content": json.dumps(result, ensure_ascii=False)})
 
     def _complete(self, extra: list[dict]):
         return self.client.chat.completions.create(
@@ -205,33 +243,37 @@ class Agent:
             **({"reasoning_effort": self.settings.reasoning_effort} if self.settings.reasoning_effort else {}),
         )
 
-    def _problem(self, user_text: str, text: str) -> tuple[str, str] | None:
-        """(log line, retry instruction) if the reply isn't grounded; None if it is."""
-        missing = self.missing_lookups(user_text)
-        if missing and not _ASKS_FOR_CONTACT.search(norm(text)):
-            topics = ", ".join(topic for topic, _ in missing)
-            hints = "; ".join(f"{topic} → {hint}" for topic, hint in missing)
-            return f"resposta sem consultar: {topics}", NUDGE_LOOKUP.format(topics=topics, hints=hints)
-        values = untraceable_values(text, self._sources())
-        if values:
-            listed = ", ".join(values)
-            return f"valor sem origem em nenhuma consulta ({listed})", NUDGE_VALUES.format(values=listed)
-        return None
-
     def reply(self, user_text: str) -> Turn:
         turn = Turn(user=user_text, reply="")
         self.history.append({"role": "user", "content": user_text})
         extra: list[dict] = []  # transient instruction for this turn only, never stored in history
-        retried = False
+        looked_up = nudged = False
         events: list[str] = []
 
         for _ in range(MAX_TOOL_ROUNDS):
             message = self._complete(extra).choices[0].message
             if not message.tool_calls:
                 text = _THINK.sub("", message.content or "").strip() or FALLBACK
-                problem = self._problem(user_text, text)
-                if problem and not retried:
-                    retried = True
+                missing = [] if _ASKS_FOR_CONTACT.search(norm(text)) else self.missing_lookups(user_text)
+                automatic = [lookup for *_, lookup in missing if lookup]
+                if automatic and not looked_up:
+                    # The model skipped lookups we can make for it: make them, then let it answer again.
+                    looked_up = True
+                    self._run_lookups(automatic, turn)
+                    events.append(f"resposta sem consultar {', '.join(t for t, *_ in missing)}: "
+                                  "consulta feita automaticamente e resposta refeita")
+                    extra = []
+                    continue
+                problem = None
+                if missing:
+                    topics = ", ".join(topic for topic, *_ in missing)
+                    hints = "; ".join(f"{topic} → {hint}" for topic, hint, _ in missing)
+                    problem = (f"resposta sem consultar {topics}", NUDGE_LOOKUP.format(topics=topics, hints=hints))
+                elif values := untraceable_values(text, self._sources()):
+                    listed = ", ".join(values)
+                    problem = (f"valor sem origem em nenhuma consulta ({listed})", NUDGE_VALUES.format(values=listed))
+                if problem and not nudged:
+                    nudged = True
                     events.append(f"{problem[0]}: descartada e refeita")
                     extra = [{"role": "system", "content": problem[1]}]
                     continue

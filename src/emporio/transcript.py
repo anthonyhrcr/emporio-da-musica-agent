@@ -28,7 +28,8 @@ def to_markdown(title: str, turns: list[Turn], settings: Settings, note: str | N
                 result = json.dumps(call.result, ensure_ascii=False, indent=1)
                 if len(result) > MAX_RESULT_CHARS:
                     result = result[:MAX_RESULT_CHARS] + "\n... (truncado)"
-                lines += [f"`{call.name}({json.dumps(call.arguments, ensure_ascii=False)})`", "",
+                origin = " — *feita automaticamente pelo guardrail*" if getattr(call, "automatic", False) else ""
+                lines += [f"`{call.name}({json.dumps(call.arguments, ensure_ascii=False)})`{origin}", "",
                           "```json", result, "```", ""]
             lines += ["</details>", ""]
         if turn.guardrail:

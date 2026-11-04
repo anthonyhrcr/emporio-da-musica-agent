@@ -164,7 +164,11 @@ class Toolbox:
         preco_min: float | None = None,
         incluir_indisponiveis: bool = False,
     ) -> dict:
-        categories, tokens = self._parse_query(f"{termo or ''} {categoria or ''}")
+        # The schema offers category names as an enum: an exact name selects that category directly
+        # (a run showed "Instrumentos de Sopro (Metais)" being ignored by keyword parsing).
+        exact = {c.id for c in self.store.categories.values() if categoria and norm(c.name) == norm(categoria)}
+        categories, tokens = self._parse_query(f"{termo or ''} {'' if exact else categoria or ''}")
+        categories |= exact
         candidates = []
         for product in self.store.products.values():
             if categories and product.category_id not in categories:

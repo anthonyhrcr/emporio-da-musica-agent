@@ -62,7 +62,7 @@ def main() -> None:
             sys.exit(f"\nO provedor do modelo respondeu com erro {exc.status_code}: {exc.message}")
         if args.debug:
             for call in turn.tool_calls:
-                print(f"  🔧 {call.name}({call.arguments})")
+                print(f"  🔧 {call.name}({call.arguments}){' [automática]' if call.automatic else ''}")
             if turn.guardrail:
                 print(f"  🛡️ {turn.guardrail}")
         print(f"\nLia › {turn.reply}\n")

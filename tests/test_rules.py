@@ -129,6 +129,13 @@ def test_empty_category_is_explained_not_invented(tools):
     assert result["categorias_sem_produtos"].startswith("Nenhum produto à venda")
 
 
+def test_exact_category_name_selects_that_category(tools):
+    # Run 3: "Instrumentos de Sopro (Metais)" was ignored, so brass was never reported as empty.
+    result = tools.search_products(categoria="Instrumentos de Sopro (Metais)", termo="saxofone")
+    assert "Metais" in result["categorias_sem_produtos"] and "Madeiras" in result["categorias_sem_produtos"]
+    assert tools.search_products(categoria="Ukuleles")["total_encontrado"] > 0
+
+
 def test_named_model_that_is_out_of_stock_is_reported_by_search(tools):
     result = tools.search_products(termo="Giannini GF-3D")
     assert result["indisponiveis_com_esse_nome"] == [
