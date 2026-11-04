@@ -2,7 +2,7 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 26s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 78s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Quanto custa o Takamine GD20?
 
@@ -44,26 +44,24 @@
 
 **Lia:**
 
-> O Takamine GD20 está disponível e custa:
+> O Takamine GD20 Dreadnought Natural está disponível por **R$ 2.199,00** (preço final). Se você pagar no PIX, ganha **5% de desconto**, ficando por **R$ 2.089,05**. 
 > 
-> - **Preço final:** R$ 2.199,00  
-> - **PIX:** R$ 2.089,05 (5% de desconto)  
-> - **Débito ou boleto:** R$ 2.199,00  
-> - **Parcelamento:** 12x de R$ 183,25 no cartão de crédito  
+> Também pode ser parcelado em até **12x de R$ 183,25** no cartão de crédito. 
 > 
-> Se quiser, posso te ajudar a escolher um violão que combine com o seu estilo! 🎸
+> Quer saber mais sobre esse violão ou precisa de ajuda com algo else? 😊
 
 **Cliente:** Vi que ele tava com 12% de desconto, ainda vale?
 
+🛡️ *Guardrail: o modelo insistiu sem consultar ferramentas: resposta substituída por aviso.*
+
 **Lia:**
 
-> A oferta especial de 12% já encerrou, não vale mais. O preço final continua R$ 2.199,00. Se quiser, posso te mostrar outros modelos com descontos ativos! 🎸
+> Não consegui confirmar essa informação no sistema agora, e prefiro não te passar nada errado. Quer que eu encaminhe sua pergunta para a equipe?
 
 **Cliente:** E no PIX sai quanto? Dá pra parcelar em 12x?
 
+🛡️ *Guardrail: o modelo insistiu sem consultar ferramentas: resposta substituída por aviso.*
+
 **Lia:**
 
-> - **PIX:** R$ 2.089,05 (5% de desconto sobre o preço de tabela)  
-> - **Parcelamento:** Sim, 12x de R$ 183,25 no cartão de crédito  
-> 
-> Quer que eu te ajude a calcular como fica com o PIX + parcelamento? 😊
+> Não consegui confirmar essa informação no sistema agora, e prefiro não te passar nada errado. Quer que eu encaminhe sua pergunta para a equipe?

@@ -8,7 +8,7 @@
 
 <details><summary>🔧 Ferramentas consultadas: <code>search_products</code></summary>
 
-`search_products({"categoria": "Violões", "preco_max": 1000, "termo": "violão", "incluir_indisponiveis": false})`
+`search_products({"categoria": "Violões", "preco_max": 1000, "incluir_indisponiveis": false})`
 
 ```json
 {
@@ -98,7 +98,7 @@
 
 **Lia:**
 
-> Aqui estão as opções de violões disponíveis até R$1000:
+> Aqui estão as opções de violões disponíveis com preço até R$1000:
 > 
 > 1. **Tagima Memphis AC-39 Nylon Natural** - R$ 429,90  
 > 2. **Rozini RC-104 Nylon Estudante** - R$ 459,90  
@@ -113,18 +113,24 @@
 > 11. **Tagima Woodstock Dreadnought Natural** - R$ 899,00  
 > 12. **Tagima TW-7 7 Cordas Aço Natural** - R$ 999,00  
 > 
-> Se quiser mais detalhes sobre algum, é só me dizer! 🎸
+> Se quiser mais detalhes sobre algum modelo, é só me dizer! 🎸
 
 **Cliente:** Sou iniciante e prefiro corda de nylon. Qual você indicaria?
 
 **Lia:**
 
-> Entre os violões com corda de nylon que temos até R$1000, destaco esses dois modelos que são ótimos para iniciantes:
+> Para iniciantes que preferem corda de nylon, recomendo os seguintes modelos da lista:
 > 
-> 1. **Yamaha C40 Nylon Natural** - R$ 599,90  
->    - É um violão muito versátil e confortável para quem está começando. A corda de nylon oferece um som suave e equilibrado, ideal para ensaios e prática.
+> 1. **Tagima Memphis AC-39 Nylon Natural** - R$ 429,90  
+>    - Ideal para quem busca um violão acessível e com bom som para iniciantes.
 > 
 > 2. **Rozini RC-104 Nylon Estudante** - R$ 459,90  
->    - É um ótimo custo-benefício para iniciantes. Tem um design simples e é muito fácil de tocar, perfeito para quem está começando a aprender.
+>    - Muito versátil e confortável para quem está começando.
 > 
-> Se quiser, posso te mostrar mais opções ou detalhes sobre algum deles! 🎸
+> 3. **Yamaha C40 Nylon Natural** - R$ 599,90  
+>    - Uma ótima opção para iniciantes, com qualidade e som equilibrado.
+> 
+> 4. **Yamaha C70 Nylon Natural** - R$ 849,90  
+>    - Mais sofisticado, mas ainda muito adequado para quem está começando e quer um instrumento mais duradouro.
+> 
+> Se quiser, posso te mostrar detalhes de algum desses modelos! 🎸

@@ -2,22 +2,37 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 15s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 30s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Vocês vendem cordas e amplificador?
 
 **Lia:**
 
-> Não, a Empório da Música vende **apenas instrumentos musicais**, como violões, guitarras, teclados, baterias e outros. Cordas e amplificadores são acessórios, que não estão disponíveis na loja. Se precisar de ajuda com algum instrumento ou política da loja, é só me dizer! 🎸
+> Não, não vendemos cordas e amplificadores. Somos especializados em instrumentos musicais, como violões, guitarras, baixos, teclados e muito mais. Se precisar de ajuda com algum instrumento ou tem dúvidas sobre nossos produtos, é só me dizer! 😊
 
 **Cliente:** E quem ganhou o jogo do Flamengo ontem?
 
 **Lia:**
 
-> Poxa, sou só um assistente da Empório da Música e não acompanho jogos de futebol. Se precisar de ajuda com instrumentos, pedidos ou políticas da loja, é só me dizer! 🎸
+> Sinto muito, mas não posso ajudar com assuntos fora da loja. Sou a Lia, da Empório da Música, e só posso falar sobre instrumentos musicais, pedidos ou políticas da loja. Se precisar de ajuda com algo relacionado a música ou nossos produtos, é só me dizer! 😊
 
 **Cliente:** Beleza. Vocês têm saxofone?
 
+<details><summary>🔧 Ferramentas consultadas: <code>search_products</code></summary>
+
+`search_products({"categoria": "Instrumentos de Sopro (Metais)", "termo": "saxofone", "incluir_indisponiveis": false})`
+
+```json
+{
+ "criterio_de_preco": "preço final, já com promoção ativa; desconto PIX não incluído",
+ "total_encontrado": 0,
+ "produtos": [],
+ "categorias_sem_produtos": "A loja trabalha com Instrumentos de Sopro (Madeiras), mas não há nenhum produto cadastrado nessa categoria no momento."
+}
+```
+
+</details>
+
 **Lia:**
 
-> Tem sim! Temos vários modelos de **saxofones** na loja. Quer que eu liste os disponíveis? 🎺
+> Poxa, não temos saxofones disponíveis no momento. A loja trabalha com instrumentos de sopro, mas só temos modelos de madeira, como clarinetes e oboés. Se quiser, posso te mostrar algumas opções! 😊
