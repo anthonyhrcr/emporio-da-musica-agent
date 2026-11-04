@@ -2,13 +2,13 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 100s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 57s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Me arrependi da minha compra, posso devolver meu pedido?
 
 **Lia:**
 
-> Claro! Para verificar as opções de devolução, preciso do seu telefone com DDD ou e-mail usado na compra. Pode me informar? assim posso verificar o status do seu pedido e as possibilidades de devolução. 😊
+> Claro! Vamos verificar as opções de devolução. Para isso, preciso do seu telefone com DDD ou e-mail usado na compra. Você pode me informar?
 
 **Cliente:** É o pedido 7. Meu telefone é (67) 98888-1234
 
@@ -27,7 +27,7 @@
 
 **Lia:**
 
-> Desculpe, não consegui encontrar o seu cadastro com o telefone informado. Pode me dizer o e-mail usado na compra? Assim posso verificar o status do seu pedido e as opções de devolução. 😊
+> Desculpe, Lia! Não consegui encontrar o seu cadastro com o telefone informado. Pode me dizer o e-mail usado na compra? Assim, posso verificar as opções de devolução para o seu pedido. 😊
 
 **Cliente:** Ah, desculpa, comprei com o e-mail leticia.rocha@jmail.com
 
@@ -73,12 +73,21 @@
 
 **Lia:**
 
-> Letícia, infelizmente, o prazo para devolução por arrependimento já passou. O prazo é de **7 dias corridos após o recebimento**, que encerrou em **24/02/2026**. 
+> Olá, Letícia! 😊
 > 
-> Mas não se preocupe! Você ainda pode utilizar a **garantia legal contra defeitos**, que é válida por **90 dias a partir do recebimento** (até **18/05/2026**). Se o produto estiver com algum defeito, pode solicitar a troca ou reembolso.
+> Infelizmente, o prazo para devolução por arrependimento já passou (até 24/02/2026). Porém, você ainda pode considerar as seguintes opções:
 > 
-> Se quiser, posso ajudar a verificar se o produto está dentro do prazo da garantia do fabricante também. 😊  
-> Quer que eu faça isso?
+> 1. **Garantia legal contra defeitos** (90 dias do recebimento):  
+>    - Vence até **18/05/2026**.  
+>    - Se o produto apresentar algum defeito, você pode solicitar reparo, substituição ou reembolso.
+> 
+> 2. **Garantia do fabricante** (de 6 meses a 2 anos, conforme o certificado do produto):  
+>    - A garantia do fabricante do ukulele (Shelby) ainda está válida.  
+>    - Você pode entrar em contato com a marca para verificar se há algum defeito ou necessidade de reparo.
+> 
+> Se quiser, posso ajudar a buscar mais informações sobre a garantia do fabricante ou orientar sobre como proceder com a garantia legal. 😊
+> 
+> Precisa de ajuda com algo específico?
 
 **Cliente:** Na verdade o ukulele veio com um defeito no traste. O que eu faço?
 
@@ -118,8 +127,13 @@
 
 **Lia:**
 
-> Letícia, entendi! O ukulele veio com um defeito no traste, e isso está dentro da **garantia legal de 90 dias** (até **18/05/2026**). 
+> Olá, Letícia! 😊
 > 
-> Agora, para resolver isso, precisamos **registar o caso com a equipe da loja**. Vou encaminhar para eles e te informarei o protocolo assim que recebermos a resposta. 😊
+> Entendi, o ukulele veio com um defeito no traste. Infelizmente, o prazo para troca direta na loja (30 dias da compra) já passou (encerrado em 05/03/2026). Porém, você ainda tem direito à **garantia legal de 90 dias** (até 18/05/2026).  
 > 
-> Quer que eu faça isso agora?
+> Vamos resolver isso! 🎸  
+> Preciso que você me informe **como o defeito aconteceu** (ex.: se foi durante o transporte, se o traste está quebrado, se há algum defeito de fabricação) e se **você já tentou reparar**.  
+> 
+> Depois, vamos encaminhar para a equipe para que possamos agir com a garantia legal.  
+> 
+> Você pode me dizer mais sobre o problema? 😊

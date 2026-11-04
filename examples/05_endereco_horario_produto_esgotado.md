@@ -2,13 +2,23 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 69s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 60s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Qual o endereço da loja? Vocês abrem sábado?
 
-<details><summary>🔧 Ferramentas consultadas: <code>get_policy</code></summary>
+<details><summary>🔧 Ferramentas consultadas: <code>get_policy</code>, <code>get_policy</code></summary>
 
-`get_policy({"secao": "sobre_a_loja_e_contato"})`
+`get_policy({"secao": "horario_de_funcionamento"})` — *feita automaticamente pelo guardrail*
+
+```json
+{
+ "secao": 2,
+ "titulo": "Horário de Funcionamento",
+ "texto": "O atendimento presencial na loja segue os horários abaixo. O atendimento via WhatsApp segue o\nmesmo horário, com respostas automáticas fora do expediente.\nDia Horário\nSegunda a Sexta-feira 09:00 às 18:00\nSábado 09:00 às 13:00\nDomingo e Feriados Fechado\nEm datas especiais (Black Friday, Aniversário da Loja, Natal), o horário pode ser estendido.\nAlterações serão comunicadas com antecedência nas redes sociais e no atendimento via WhatsApp."
+}
+```
+
+`get_policy({"secao": "sobre_a_loja_e_contato"})` — *feita automaticamente pelo guardrail*
 
 ```json
 {
@@ -21,17 +31,25 @@
 
 </details>
 
-🛡️ *Guardrail: resposta sem consultar: horário de funcionamento, endereço e contato da loja: descartada e refeita; resposta sem consultar: horário de funcionamento: resposta substituída por aviso.*
+🛡️ *Guardrail: resposta sem consultar horário de funcionamento, endereço e contato da loja: consulta feita automaticamente e resposta refeita.*
 
 **Lia:**
 
-> Não consegui confirmar essa informação no sistema agora, e prefiro não te passar nada errado. Quer que eu encaminhe sua pergunta para a equipe?
+> A Empório da Música fica na Rua 14 de Maio, 3200 — Centro, Campo Grande - MS, 79202-333. O telefone é (67) 3341-4444, e o e-mail é contato@emporiodamusica.com.br.
+> 
+> Sobre o horário:  
+> - **Segunda a Sexta-feira**: 09:00 às 18:00  
+> - **Sábado**: 09:00 às 13:00  
+> - **Domingo e Feriados**: Fechado  
+> 
+> Vocês abrem **sábado**, mas o horário é mais curto (das 9h às 13h). 😊  
+> Precisa de mais alguma informação?
 
 **Cliente:** Tem o Giannini GF-3D?
 
 <details><summary>🔧 Ferramentas consultadas: <code>search_products</code></summary>
 
-`search_products({"categoria": "Violões", "termo": "Giannini GF-3D"})`
+`search_products({"termo": "Giannini GF-3D", "categoria": "Violões"})`
 
 ```json
 {
@@ -81,11 +99,15 @@
 
 **Lia:**
 
-> O modelo **Giannini GF-3D** não está disponível no momento, mas temos outros modelos da mesma marca que podem ser interessantes:
+> O modelo **Giannini GF-3D** não está disponível no momento, mas temos outras opções do mesmo fabricante e estilo:
 > 
-> - **Giannini GF-1R Aço Folk Sunburst** – R$ 579,90 (disponível)
-> - **Giannini GN-15 Nylon Cedr Natural** – R$ 689,00 (disponível)
-> - **Giannini GNF-3 CEQ Elétrico Nylon Natural** – R$ 1.049,00 (disponível)
-> - **Giannini GWNE-7 7 Cordas Nylon Natural** – R$ 1.149,00 (disponível)
+> ✅ **Disponíveis:**
+> - **Giannini GF-1R Aço Folk Sunburst** – R$ 579,90  
+> - **Giannini GN-15 Nylon Cedr Natural** – R$ 689,00  
+> - **Giannini GNF-3 CEQ Elétrico Nylon Natural** – R$ 1.049,00  
+> - **Giannini GWNE-7 7 Cordas Nylon Natural** – R$ 1.149,00  
 > 
-> Se quiser, posso te mostrar mais detalhes de algum desses modelos. 😊
+> ⚠️ **Indisponível:**
+> - **Giannini GF-3D Dreadnought Sunburst** – Esgotado  
+> 
+> Quer que eu te avise quando o GF-3D estiver de volta? 😊
