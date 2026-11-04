@@ -2,7 +2,7 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 23s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 24s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Quanto custa o Takamine GD20?
 
@@ -57,13 +57,13 @@
 
 **Lia:**
 
-> A oferta especial de 12% já encerrou e não está mais válida. O preço final agora é R$ 2.199,00. Se quiser, posso te mostrar outras opções de violões com descontos ativos! 🎸
+> A oferta especial de 12% estava encerrada, então não vale mais. O preço final continua R$ 2.199,00. Se quiser, posso te mostrar outros modelos com descontos ativos! 🎸
 
 **Cliente:** E no PIX sai quanto? Dá pra parcelar em 12x?
 
 **Lia:**
 
 > - **PIX:** R$ 2.089,05 (5% de desconto sobre o preço de tabela)  
-> - **Parcelamento:** Sim, pode ser parcelado em **12x de R$ 183,25** no cartão de crédito.  
+> - **Parcelamento:** Sim, 12x de R$ 183,25 no cartão de crédito  
 > 
-> Quer que eu te ajude a escolher a melhor forma de pagamento? 😊
+> Quer que eu te ajude a montar um orçamento? 🎸

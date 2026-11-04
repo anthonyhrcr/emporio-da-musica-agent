@@ -2,13 +2,13 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 55s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 49s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Oi! Quais opções de violões disponíveis custando até R$1000?
 
 <details><summary>🔧 Ferramentas consultadas: <code>search_products</code></summary>
 
-`search_products({"incluir_indisponiveis": false, "categoria": "Violões", "preco_max": 1000})`
+`search_products({"preco_max": 1000, "incluir_indisponiveis": false, "categoria": "Violões"})`
 
 ```json
 {
@@ -98,7 +98,7 @@
 
 **Lia:**
 
-> Aqui estão as opções de violões disponíveis até R$1000:
+> Aqui estão as opções de violões disponíveis com preço até R$1000:
 > 
 > 1. **Tagima Memphis AC-39 Nylon Natural** - R$ 429,90  
 > 2. **Rozini RC-104 Nylon Estudante** - R$ 459,90  
@@ -113,12 +113,24 @@
 > 11. **Tagima Woodstock Dreadnought Natural** - R$ 899,00  
 > 12. **Tagima TW-7 7 Cordas Aço Natural** - R$ 999,00  
 > 
-> Quer saber mais sobre algum modelo? 😊
+> Se quiser mais detalhes sobre algum, é só me dizer! 🎸
 
 **Cliente:** Sou iniciante e prefiro corda de nylon. Qual você indicaria?
 
 **Lia:**
 
-> Entre os modelos com corda de nylon que temos até R$1000, o **Tagima Memphis AC-39 Nylon Natural** e o **Yamaha C40 Nylon Natural** são ótimas opções para iniciantes. Eles têm um som equilibrado, são confortáveis para tocar e são ideais para quem está começando.  
+> Aqui estão algumas opções de violões com corda de nylon que são ótimas para iniciantes:
 > 
-> Quer que eu mostre mais detalhes de algum? 😊
+> 1. **Rozini RC-104 Nylon Estudante** - R$ 459,90  
+>    - Ideal para quem está começando, com um custo-benefício excelente.
+> 
+> 2. **Yamaha C40 Nylon Natural** - R$ 599,90  
+>    - Uma escolha confiável e confortável para iniciantes.
+> 
+> 3. **Tagima Memphis AC-39 Nylon Natural** - R$ 429,90  
+>    - Um violão acessível e com boa qualidade para quem está começando.
+> 
+> 4. **Giannini GN-15 Nylon Cedr Natural** - R$ 689,00  
+>    - Mais caro, mas oferece um som mais rico e é muito confortável para tocar.
+> 
+> Se quiser, posso te ajudar a escolher com base no seu estilo ou orçamento! 🎸

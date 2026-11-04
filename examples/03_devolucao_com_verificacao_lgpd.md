@@ -2,13 +2,13 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 57s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 67s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Me arrependi da minha compra, posso devolver meu pedido?
 
 **Lia:**
 
-> Claro! Vamos verificar as opções de devolução. Para isso, preciso do seu telefone com DDD ou e-mail usado na compra. Você pode me informar?
+> Claro! Vamos verificar suas opções. Para isso, preciso do seu telefone com DDD ou e-mail usado na compra. Você pode me informar? assim posso ajudar com a devolução.
 
 **Cliente:** É o pedido 7. Meu telefone é (67) 98888-1234
 
@@ -27,13 +27,13 @@
 
 **Lia:**
 
-> Desculpe, Lia! Não consegui encontrar o seu cadastro com o telefone informado. Pode me dizer o e-mail usado na compra? Assim, posso verificar as opções de devolução para o seu pedido. 😊
+> Desculpe, não consegui encontrar o seu cadastro com o telefone informado. Pode ser que haja um erro no número. Você pode me informar o e-mail usado na compra? Assim, posso verificar novamente. 😊
 
 **Cliente:** Ah, desculpa, comprei com o e-mail leticia.rocha@jmail.com
 
 <details><summary>🔧 Ferramentas consultadas: <code>check_return_options</code></summary>
 
-`check_return_options({"contato": "leticia.rocha@jmail.com", "motivo": "arrependimento", "numero_pedido": "7"})`
+`check_return_options({"numero_pedido": "7", "contato": "leticia.rocha@jmail.com", "motivo": "arrependimento"})`
 
 ```json
 {
@@ -73,21 +73,19 @@
 
 **Lia:**
 
-> Olá, Letícia! 😊
+> Letícia, infelizmente, o prazo para devolução por arrependimento já passou. O prazo é de **7 dias corridos após o recebimento**, que encerrou em **24/02/2026**. 
 > 
-> Infelizmente, o prazo para devolução por arrependimento já passou (até 24/02/2026). Porém, você ainda pode considerar as seguintes opções:
+> No entanto, você ainda pode considerar as seguintes opções:
 > 
 > 1. **Garantia legal contra defeitos** (90 dias do recebimento):  
->    - Vence até **18/05/2026**.  
->    - Se o produto apresentar algum defeito, você pode solicitar reparo, substituição ou reembolso.
+>    - Vence em **18/05/2026**.  
+>    - Se o produto apresentar algum defeito, você pode solicitar reparo ou troca.
 > 
 > 2. **Garantia do fabricante** (de 6 meses a 2 anos, conforme o certificado do produto):  
->    - A garantia do fabricante do ukulele (Shelby) ainda está válida.  
->    - Você pode entrar em contato com a marca para verificar se há algum defeito ou necessidade de reparo.
+>    - Pode ser válida, dependendo do modelo do ukulele.  
+>    - Consulte o certificado do produto para verificar o prazo exato.
 > 
-> Se quiser, posso ajudar a buscar mais informações sobre a garantia do fabricante ou orientar sobre como proceder com a garantia legal. 😊
-> 
-> Precisa de ajuda com algo específico?
+> Se quiser, posso ajudar a verificar a garantia do produto ou orientar sobre como proceder com a garantia legal. 😊
 
 **Cliente:** Na verdade o ukulele veio com um defeito no traste. O que eu faço?
 
@@ -127,13 +125,9 @@
 
 **Lia:**
 
-> Olá, Letícia! 😊
+> Letícia, entendi! O ukulele veio com um defeito no traste, e isso está dentro da **garantia legal de 90 dias** (até **18/05/2026**). 
 > 
-> Entendi, o ukulele veio com um defeito no traste. Infelizmente, o prazo para troca direta na loja (30 dias da compra) já passou (encerrado em 05/03/2026). Porém, você ainda tem direito à **garantia legal de 90 dias** (até 18/05/2026).  
+> Agora, vamos resolver isso! 🎶  
+> Vou encaminhar o seu caso para a nossa equipe para que possamos dar o suporte necessário. Você pode me informar se tem algum problema específico ou se quer que a gente agende uma troca.  
 > 
-> Vamos resolver isso! 🎸  
-> Preciso que você me informe **como o defeito aconteceu** (ex.: se foi durante o transporte, se o traste está quebrado, se há algum defeito de fabricação) e se **você já tentou reparar**.  
-> 
-> Depois, vamos encaminhar para a equipe para que possamos agir com a garantia legal.  
-> 
-> Você pode me dizer mais sobre o problema? 😊
+> Aguarde um momento, ok? 😊

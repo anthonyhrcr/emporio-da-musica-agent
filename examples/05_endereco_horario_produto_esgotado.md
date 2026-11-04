@@ -2,7 +2,7 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 60s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 58s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Qual o endereço da loja? Vocês abrem sábado?
 
@@ -37,12 +37,8 @@
 
 > A Empório da Música fica na Rua 14 de Maio, 3200 — Centro, Campo Grande - MS, 79202-333. O telefone é (67) 3341-4444, e o e-mail é contato@emporiodamusica.com.br.
 > 
-> Sobre o horário:  
-> - **Segunda a Sexta-feira**: 09:00 às 18:00  
-> - **Sábado**: 09:00 às 13:00  
-> - **Domingo e Feriados**: Fechado  
+> Sim, abrimos **sábado** das 09:00 às 13:00. O atendimento presencial e via WhatsApp segue esse horário. 😊
 > 
-> Vocês abrem **sábado**, mas o horário é mais curto (das 9h às 13h). 😊  
 > Precisa de mais alguma informação?
 
 **Cliente:** Tem o Giannini GF-3D?
@@ -99,15 +95,11 @@
 
 **Lia:**
 
-> O modelo **Giannini GF-3D** não está disponível no momento, mas temos outras opções do mesmo fabricante e estilo:
+> O modelo **Giannini GF-3D** não está disponível no momento. Porém, temos outros modelos da marca Giannini disponíveis:
 > 
-> ✅ **Disponíveis:**
-> - **Giannini GF-1R Aço Folk Sunburst** – R$ 579,90  
-> - **Giannini GN-15 Nylon Cedr Natural** – R$ 689,00  
-> - **Giannini GNF-3 CEQ Elétrico Nylon Natural** – R$ 1.049,00  
-> - **Giannini GWNE-7 7 Cordas Nylon Natural** – R$ 1.149,00  
+> - **Giannini GF-1R Aço Folk Sunburst** – R$ 579,90 (disponível)
+> - **Giannini GN-15 Nylon Cedr Natural** – R$ 689,00 (disponível)
+> - **Giannini GNF-3 CEQ Elétrico Nylon Natural** – R$ 1.049,00 (disponível)
+> - **Giannini GWNE-7 7 Cordas Nylon Natural** – R$ 1.149,00 (disponível)
 > 
-> ⚠️ **Indisponível:**
-> - **Giannini GF-3D Dreadnought Sunburst** – Esgotado  
-> 
-> Quer que eu te avise quando o GF-3D estiver de volta? 😊
+> Se quiser, posso te ajudar a escolher o mais adequado para você! 😊
