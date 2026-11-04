@@ -8,9 +8,12 @@ runs line by line (README, section 6):
    name) must have been consulted with a fitting tool somewhere in this
    conversation. A follow-up like "e no PIX?" is covered by the product lookup a
    turn earlier; a new question like "qual o endereço?" is not.
-2. Traceable? Every R$ value, full date and phone number in a reply must appear in
-   a tool result, the system prompt or the customer's own messages. The model's
-   earlier replies don't count as a source: that is how a mis-copied price spreads.
+2. Traceable? Every R$ value, full date, phone number and street address in a reply
+   must appear in a tool result, the system prompt or the customer's own messages.
+   The model's earlier replies don't count as a source: that is how a mis-copied
+   price spreads. And a reply may not name an instrument type the store has zero
+   products of, unless the customer used that word (runs 2-4 offered clarinets,
+   trumpets and trombones right after the search said there are none).
 
 When the model skipped a lookup whose call is unambiguous ("abre sábado?" -> the
 hours section; "tem saxofone?" -> a catalogue search), the code makes that lookup
@@ -32,7 +35,7 @@ from .config import Settings, load_settings
 from .data import Store, load_store, norm
 from .policies import Policies
 from .prompts import build_system_prompt
-from .tools import Toolbox, catalogue_mentions
+from .tools import CATEGORY_WORDS, Toolbox, catalogue_mentions
 
 MAX_TOOL_ROUNDS = 6
 FALLBACK = (
@@ -47,6 +50,11 @@ NUDGE_LOOKUP = (
     "Sua última resposta foi descartada: ela tratava de {topics} sem que isso tivesse sido consultado nesta "
     "conversa. Antes de responder, consulte: {hints}. Se precisar do telefone ou e-mail do cliente para "
     "consultar um pedido e ele ainda não informou, peça ao cliente em vez de inventar."
+)
+NUDGE_ABSENT = (
+    "Sua última resposta foi descartada porque citava {words}, mas a loja não tem nenhum produto desse tipo. "
+    "Responda sem oferecer nem citar esses instrumentos. Se quiser sugerir algo, sugira apenas produtos "
+    "retornados pelas ferramentas."
 )
 NUDGE_VALUES = (
     "Sua última resposta foi descartada porque citava {values}, que não aparece em nenhuma consulta desta "
@@ -160,10 +168,24 @@ def untraceable_values(reply: str, sources: str) -> list[str]:
     return list(dict.fromkeys(missing))
 
 
+def absent_instruments(reply: str, customer_text: str, absent_words: set[str]) -> list[str]:
+    """Instrument types the store has no products of, named in the reply but never by the customer."""
+    if not absent_words:
+        return []
+    said = {word.rstrip("s") for word in re.findall(r"[a-z]+", norm(customer_text))}
+    pattern = re.compile(r"\b(" + "|".join(re.escape(w) for w in sorted(absent_words, key=len, reverse=True)) + r")s?\b")
+    found = [m.group(0) for m in pattern.finditer(norm(reply)) if m.group(1).rstrip("s") not in said]
+    return list(dict.fromkeys(found))  # in the order they appear in the reply
+
+
 class Agent:
     def __init__(self, settings: Settings, store: Store, policies: Policies, client: OpenAI | None = None):
         self.settings = settings
         self.store = store
+        stocked = {p.category_id for p in store.products.values()}
+        # Specific instrument nouns of categories with zero products ("sopro" is a family name, kept out).
+        self._absent_words = {w for c, words in CATEGORY_WORDS.items() if c not in stocked
+                              for w in words if w != "sopro"}
         self.toolbox = Toolbox(store, policies, settings)
         self.client = client or OpenAI(base_url=settings.base_url, api_key=settings.api_key)
         self.history: list[dict] = []
@@ -190,6 +212,9 @@ class Agent:
         parts = [self._messages()[0]["content"]]
         parts += [m["content"] for m in self.history if m["role"] in ("user", "tool")]
         return "\n".join(parts)
+
+    def _customer_text(self) -> str:
+        return "\n".join(m["content"] for m in self.history if m["role"] == "user")
 
     def _consulted(self) -> tuple[set[str], str]:
         """Tool calls made in this conversation ('get_policy:<section>' for policies) and their evidence text."""
@@ -272,6 +297,9 @@ class Agent:
                 elif values := untraceable_values(text, self._sources()):
                     listed = ", ".join(values)
                     problem = (f"valor sem origem em nenhuma consulta ({listed})", NUDGE_VALUES.format(values=listed))
+                elif absent := absent_instruments(text, self._customer_text(), self._absent_words):
+                    listed = ", ".join(absent)
+                    problem = (f"citou instrumentos que a loja não tem ({listed})", NUDGE_ABSENT.format(words=listed))
                 if problem and not nudged:
                     nudged = True
                     events.append(f"{problem[0]}: descartada e refeita")

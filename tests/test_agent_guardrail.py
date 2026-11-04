@@ -14,7 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from emporio.agent import UNGROUNDED_FALLBACK, Agent, needs_grounding, untraceable_values
+from emporio.agent import UNGROUNDED_FALLBACK, Agent, absent_instruments, needs_grounding, untraceable_values
 from emporio.config import STORE_TZ, Settings
 from emporio.data import load_store
 from emporio.policies import Policies
@@ -189,3 +189,22 @@ def test_phone_numbers_and_addresses_must_be_traceable():
         "(67) 3333-0000", "Rua das Flores, 123"]
     # A real street number at the start of the name must not let a different street through.
     assert untraceable_values("Fica na Rua 14 de Julho, 10.", sources) == ["Rua 14 de Julho, 10"]
+
+
+def test_offering_instruments_the_store_has_none_of_is_caught(store, policies, tmp_path):
+    # Runs 2-4: "não temos saxofones, mas posso te ajudar com trompetes ou trombones" right after the
+    # search said both wind-instrument categories are empty.
+    model = ScriptedModel(
+        call("search_products", termo="saxofone"),
+        text("Poxa, não temos saxofones. Posso te ajudar com trompetes ou trombones!"),
+        text("Poxa, não temos saxofones à venda no momento. Posso te ajudar com outro instrumento?"),
+    )
+    turn = agent_with(model, store, policies, tmp_path).reply("Vocês têm saxofone?")
+    assert "trompetes" not in turn.reply and "saxofones" in turn.reply
+    assert "trompetes, trombones" in turn.guardrail
+
+
+def test_echoing_the_customers_own_word_in_a_negation_is_fine():
+    absent = {"saxofone", "saxofones", "trompete", "trompetes", "clarinete", "clarinetes"}
+    assert absent_instruments("Não temos saxofones no momento.", "Vocês têm saxofone?", absent) == []
+    assert absent_instruments("Mas temos clarinetes!", "Vocês têm saxofone?", absent) == ["clarinetes"]
