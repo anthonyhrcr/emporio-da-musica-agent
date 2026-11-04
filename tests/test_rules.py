@@ -126,7 +126,13 @@ def test_expired_promotion_is_reported_as_ended(tools):
 def test_empty_category_is_explained_not_invented(tools):
     result = tools.search_products(termo="saxofone")
     assert result["total_encontrado"] == 0
-    assert "categorias_sem_produtos" in result
+    assert result["categorias_sem_produtos"].startswith("Nenhum produto à venda")
+
+
+def test_named_model_that_is_out_of_stock_is_reported_by_search(tools):
+    result = tools.search_products(termo="Giannini GF-3D")
+    assert result["indisponiveis_com_esse_nome"] == [
+        {"nome": "Giannini GF-3D Dreadnought Sunburst", "disponibilidade": "esgotado"}]
 
 
 # --- orders: verification (LGPD) -------------------------------------------------

@@ -12,7 +12,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from emporio.agent import UNGROUNDED_FALLBACK, Agent, needs_grounding
+from emporio.agent import UNGROUNDED_FALLBACK, Agent, needs_grounding, untraceable_values
 from emporio.config import STORE_TZ, Settings
 from emporio.data import load_store
 from emporio.policies import Policies
@@ -70,6 +70,80 @@ def test_ungrounded_product_claim_is_discarded_and_redone(store, policies, tmp_p
     assert [c.name for c in turn.tool_calls] == ["search_products"]
     assert turn.guardrail is not None
     assert "descartada" in model.requests[1]["messages"][-1]["content"]
+
+
+def test_miscopied_price_is_caught_and_redone(store, policies, tmp_path):
+    # Real failure from the second example run: R$ 849,00 in the tool, R$ 849,90 in the reply.
+    model = ScriptedModel(
+        call("search_products", termo="violão nylon", preco_max=1000),
+        text("Recomendo o Yamaha C70 Nylon Natural por R$ 849,90."),
+        text("Recomendo o Yamaha C70 Nylon Natural por R$ 849,00."),
+    )
+    turn = agent_with(model, store, policies, tmp_path).reply("Qual violão de nylon até R$1000 você indica?")
+    assert turn.reply.endswith("R$ 849,00.")
+    assert "849,90" in turn.guardrail
+    assert "R$ 849,90" in model.requests[2]["messages"][-1]["content"]
+
+
+def test_wrong_value_that_persists_is_never_shown(store, policies, tmp_path):
+    model = ScriptedModel(
+        call("get_product_details", produto="Takamine GD20"),
+        text("Sai por R$ 1.999,00 no PIX."),
+        text("Sai por R$ 1.999,00 no PIX, confirmado."),
+    )
+    turn = agent_with(model, store, policies, tmp_path).reply("Quanto custa o Takamine GD20 no PIX?")
+    assert turn.reply == UNGROUNDED_FALLBACK
+
+
+def test_follow_up_answered_from_an_earlier_lookup_is_accepted(store, policies, tmp_path):
+    # Run 2 failure: "e no PIX?" was already answered by turn 1's lookup, yet was discarded.
+    model = ScriptedModel(
+        call("get_product_details", produto="Takamine GD20"),
+        text("O Takamine GD20 sai por R$ 2.199,00."),
+        text("No PIX fica R$ 2.089,05, e dá para fazer 12x de R$ 183,25."),
+    )
+    agent = agent_with(model, store, policies, tmp_path)
+    agent.reply("Quanto custa o Takamine GD20?")
+    turn = agent.reply("E no PIX sai quanto? Dá pra parcelar em 12x?")
+    assert turn.guardrail is None
+    assert turn.reply.startswith("No PIX fica R$ 2.089,05")
+
+
+def test_every_topic_asked_must_be_looked_up(store, policies, tmp_path):
+    # Run 2 failure: address looked up, Saturday hours answered from memory (9h-18h; real 9h-13h).
+    model = ScriptedModel(
+        call("get_policy", secao="sobre_a_loja_e_contato"),
+        text("Fica na Rua 14 de Maio, 3200. Sábado abrimos das 9h às 18h."),
+        call("get_policy", secao="horario_de_funcionamento"),
+        text("Fica na Rua 14 de Maio, 3200. Sábado abrimos das 9h às 13h."),
+    )
+    turn = agent_with(model, store, policies, tmp_path).reply("Qual o endereço da loja? Vocês abrem sábado?")
+    assert turn.reply.endswith("das 9h às 13h.")
+    assert "horario_de_funcionamento" in model.requests[2]["messages"][-1]["content"]
+
+
+def test_new_topic_mid_conversation_still_requires_a_lookup(store, policies, tmp_path):
+    model = ScriptedModel(
+        call("get_product_details", produto="Takamine GD20"),
+        text("O Takamine GD20 sai por R$ 2.199,00."),
+        text("Fica na Rua das Flores, 123."),
+        text("Rua das Flores, 123!"),
+    )
+    agent = agent_with(model, store, policies, tmp_path)
+    agent.reply("Quanto custa o Takamine GD20?")
+    assert agent.reply("E qual o endereço da loja?").reply == UNGROUNDED_FALLBACK
+
+
+def test_invented_phone_number_is_caught():
+    sources = 'get_policy: "Telefone / WhatsApp (67) 3341-4444"'
+    assert untraceable_values("Chama no WhatsApp (67) 3341-4444!", sources) == []
+    assert untraceable_values("Chama no WhatsApp (67) 3333-0000!", sources) == ["(67) 3333-0000"]
+
+
+def test_values_from_tools_customer_and_clock_are_traceable():
+    sources = 'tool: {"preco_no_pix": "R$ 2.089,05"}\ncliente: até R$1000\nAgora: 25/03/2026 10:30'
+    assert untraceable_values("PIX: R$ 2.089,05, até R$ 1.000,00, hoje 25/03/2026", sources) == []
+    assert untraceable_values("PIX: R$ 2.089,50 até 26/03/2026", sources) == ["R$ 2.089,50", "26/03/2026"]
 
 
 def test_model_that_insists_gets_an_honest_fallback(store, policies, tmp_path):

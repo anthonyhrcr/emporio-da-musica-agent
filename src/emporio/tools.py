@@ -42,12 +42,27 @@ STOPWORDS = {
 # A few spoken forms that differ from how the catalogue names things.
 SYNONYMS = {"eletroacustico": "eletrico", "eletroacustica": "eletrico", "eletrica": "eletrico", "acustico": ""}
 
-def mentions_catalogue(text: str, store: Store) -> bool:
-    """True if the message names an instrument category or a brand we carry."""
+def catalogue_mentions(text: str, store: Store) -> dict[str, str]:
+    """Instrument categories and brands named in a message.
+
+    Maps each word found to the text that proves it was looked up: the category's
+    name for category words ('violão' -> 'violoes'), the brand itself for brands.
+    """
     query = norm(text)
-    words = {w for group in CATEGORY_WORDS.values() for w in group}
-    words |= {norm(p.name).split()[0] for p in store.products.values()} - {"music", "bateria", "teclado"}
-    return any(re.search(rf"\b{re.escape(w)}\b", query) for w in words)
+    found = {}
+    for category_id, words in CATEGORY_WORDS.items():
+        for word in words:
+            if re.search(rf"\b{re.escape(word)}\b", query):
+                found[word] = norm(store.category_name(category_id))
+    brands = {norm(p.name).split()[0] for p in store.products.values()} - {"music", "bateria", "teclado"}
+    for brand in brands:
+        if re.search(rf"\b{re.escape(brand)}\b", query):
+            found[brand] = brand
+    return found
+
+
+def mentions_catalogue(text: str, store: Store) -> bool:
+    return bool(catalogue_mentions(text, store))
 
 
 ORDER_STATUS = {
@@ -179,11 +194,25 @@ class Toolbox:
             result["aviso"] = f"mostrando 12 de {len(matched)}; refine a busca"
         if partial:
             result["aviso_correspondencia"] = "nenhum produto tinha todos os termos; estes têm parte deles"
+        if tokens and not incluir_indisponiveis:
+            # A named model that exists but can't be sold: say so explicitly instead of letting
+            # the model infer it from an empty or partial result.
+            unavailable = [
+                p for p in self.store.products.values()
+                if not p.available and (not categories or p.category_id in categories)
+                and all(t in self._haystack(p) for t in tokens)
+            ]
+            if unavailable:
+                result["indisponiveis_com_esse_nome"] = [
+                    {"nome": p.name, "disponibilidade": p.availability} for p in unavailable[:5]
+                ]
         empty = [c for c in categories if not any(p.category_id == c for p in self.store.products.values())]
         if empty:
             names = ", ".join(self.store.category_name(c) for c in empty)
+            # Worded so it can't be misread as "we have some of these" (it was, in an example run).
             result["categorias_sem_produtos"] = (
-                f"A loja trabalha com {names}, mas não há nenhum produto cadastrado nessa categoria no momento."
+                f"Nenhum produto à venda em {names}. A loja não tem nenhum instrumento dessa categoria "
+                f"disponível agora: não cite modelos nem tipos de instrumento dessa categoria."
             )
         if not matched and not empty:
             result["dica"] = "nada encontrado; tente sem filtros de preço ou com incluir_indisponiveis=true"
@@ -303,7 +332,8 @@ class Toolbox:
             "data_da_compra": f"{order.order_date:%d/%m/%Y}",
             "status": ORDER_STATUS.get(order.status, order.status),
             "itens": [
-                f"{item.quantity}x {self.store.products[item.product_id].name}"
+                f"{item.quantity}x {self.store.products[item.product_id].name} "
+                f"({self.store.category_name(self.store.products[item.product_id].category_id)})"
                 if item.product_id in self.store.products else f"{item.quantity}x produto {item.product_id}"
                 for item in order.items
             ],
