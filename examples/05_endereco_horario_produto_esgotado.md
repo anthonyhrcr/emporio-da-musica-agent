@@ -2,7 +2,7 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 56s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 69s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Qual o endereço da loja? Vocês abrem sábado?
 
@@ -21,21 +21,17 @@
 
 </details>
 
-🛡️ *Guardrail: resposta sobre a loja sem consulta a ferramentas: descartada e refeita.*
+🛡️ *Guardrail: resposta sem consultar: horário de funcionamento, endereço e contato da loja: descartada e refeita; resposta sem consultar: horário de funcionamento: resposta substituída por aviso.*
 
 **Lia:**
 
-> O endereço da loja é **Rua 14 de Maio, 3200 — Centro, Campo Grande - MS, 79202-333**.  
-> 
-> Sim, a loja **abre aos sábados**. O horário de funcionamento é das **9h às 18h**.  
-> 
-> Precisa de mais alguma informação? 🎸
+> Não consegui confirmar essa informação no sistema agora, e prefiro não te passar nada errado. Quer que eu encaminhe sua pergunta para a equipe?
 
 **Cliente:** Tem o Giannini GF-3D?
 
 <details><summary>🔧 Ferramentas consultadas: <code>search_products</code></summary>
 
-`search_products({"termo": "Giannini GF-3D", "categoria": "Violões"})`
+`search_products({"categoria": "Violões", "termo": "Giannini GF-3D"})`
 
 ```json
 {
@@ -71,7 +67,13 @@
    "disponibilidade": "disponível"
   }
  ],
- "aviso_correspondencia": "nenhum produto tinha todos os termos; estes têm parte deles"
+ "aviso_correspondencia": "nenhum produto tinha todos os termos; estes têm parte deles",
+ "indisponiveis_com_esse_nome": [
+  {
+   "nome": "Giannini GF-3D Dreadnought Sunburst",
+   "disponibilidade": "esgotado"
+  }
+ ]
 }
 ```
 
@@ -79,11 +81,11 @@
 
 **Lia:**
 
-> Não temos o **Giannini GF-3D** disponível no momento. Mas temos outros modelos da marca Giannini que podem ser interessantes:
+> O modelo **Giannini GF-3D** não está disponível no momento, mas temos outros modelos da mesma marca que podem ser interessantes:
 > 
-> - **Giannini GF-1R Aço Folk Sunburst** – R$ 579,90  
-> - **Giannini GN-15 Nylon Cedr Natural** – R$ 689,00  
-> - **Giannini GNF-3 CEQ Elétrico Nylon Natural** – R$ 1.049,00  
-> - **Giannini GWNE-7 7 Cordas Nylon Natural** – R$ 1.149,00  
+> - **Giannini GF-1R Aço Folk Sunburst** – R$ 579,90 (disponível)
+> - **Giannini GN-15 Nylon Cedr Natural** – R$ 689,00 (disponível)
+> - **Giannini GNF-3 CEQ Elétrico Nylon Natural** – R$ 1.049,00 (disponível)
+> - **Giannini GWNE-7 7 Cordas Nylon Natural** – R$ 1.149,00 (disponível)
 > 
-> Quer que eu te passe mais detalhes de algum? 🎸
+> Se quiser, posso te mostrar mais detalhes de algum desses modelos. 😊

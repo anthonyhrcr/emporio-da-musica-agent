@@ -2,7 +2,7 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 78s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 33s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Quanto custa o Takamine GD20?
 
@@ -44,24 +44,26 @@
 
 **Lia:**
 
-> O Takamine GD20 Dreadnought Natural está disponível por **R$ 2.199,00** (preço final). Se você pagar no PIX, ganha **5% de desconto**, ficando por **R$ 2.089,05**. 
+> O Takamine GD20 Dreadnought Natural está disponível por **R$ 2.199,00** (preço final). 
 > 
-> Também pode ser parcelado em até **12x de R$ 183,25** no cartão de crédito. 
+> Se você pagar no PIX, ganha **5% de desconto**, ficando por **R$ 2.089,05**.  
+> Também pode parcelar em até **12x de R$ 183,25** no cartão de crédito.
 > 
-> Quer saber mais sobre esse violão ou precisa de ajuda com algo else? 😊
+> Quer saber mais sobre esse violão ou precisa de ajuda com a compra? 😊
 
 **Cliente:** Vi que ele tava com 12% de desconto, ainda vale?
 
-🛡️ *Guardrail: o modelo insistiu sem consultar ferramentas: resposta substituída por aviso.*
-
 **Lia:**
 
-> Não consegui confirmar essa informação no sistema agora, e prefiro não te passar nada errado. Quer que eu encaminhe sua pergunta para a equipe?
+> A oferta especial de **12% de desconto** já encerrou e não está mais válida. O preço final agora é **R$ 2.199,00** (sem desconto). 
+> 
+> Se quiser, posso te ajudar a encontrar outros modelos com promoções ativas! 😊
 
 **Cliente:** E no PIX sai quanto? Dá pra parcelar em 12x?
 
-🛡️ *Guardrail: o modelo insistiu sem consultar ferramentas: resposta substituída por aviso.*
-
 **Lia:**
 
-> Não consegui confirmar essa informação no sistema agora, e prefiro não te passar nada errado. Quer que eu encaminhe sua pergunta para a equipe?
+> O preço no PIX é **R$ 2.089,05** (com 5% de desconto sobre o preço de tabela).  
+> Sim, dá pra parcelar em **até 12x de R$ 183,25** no cartão de crédito.
+> 
+> Quer que eu te ajude a escolher um modelo que combine com o seu estilo? 🎸

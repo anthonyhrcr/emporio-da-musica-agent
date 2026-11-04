@@ -8,7 +8,7 @@
 
 <details><summary>🔧 Ferramentas consultadas: <code>search_products</code></summary>
 
-`search_products({"categoria": "Violões", "preco_max": 1000, "incluir_indisponiveis": false})`
+`search_products({"incluir_indisponiveis": false, "categoria": "Violões", "preco_max": 1000})`
 
 ```json
 {
@@ -113,24 +113,21 @@
 > 11. **Tagima Woodstock Dreadnought Natural** - R$ 899,00  
 > 12. **Tagima TW-7 7 Cordas Aço Natural** - R$ 999,00  
 > 
-> Se quiser mais detalhes sobre algum modelo, é só me dizer! 🎸
+> Se quiser mais detalhes sobre algum, é só me dizer! 🎸
 
 **Cliente:** Sou iniciante e prefiro corda de nylon. Qual você indicaria?
 
 **Lia:**
 
-> Para iniciantes que preferem corda de nylon, recomendo os seguintes modelos da lista:
+> Para iniciantes que preferem corda de nylon, recomendo os seguintes modelos, que são ótimos para quem está começando a aprender:
 > 
-> 1. **Tagima Memphis AC-39 Nylon Natural** - R$ 429,90  
->    - Ideal para quem busca um violão acessível e com bom som para iniciantes.
+> 1. **Rozini RC-104 Nylon Estudante** - R$ 459,90  
+>    - Ideal para iniciantes, com som suave e fácil de tocar.
 > 
-> 2. **Rozini RC-104 Nylon Estudante** - R$ 459,90  
->    - Muito versátil e confortável para quem está começando.
+> 2. **Yamaha C40 Nylon Natural** - R$ 599,90  
+>    - Uma opção confiável e acessível, com boa qualidade para iniciantes.
 > 
-> 3. **Yamaha C40 Nylon Natural** - R$ 599,90  
->    - Uma ótima opção para iniciantes, com qualidade e som equilibrado.
+> 3. **Tagima Memphis AC-39 Nylon Natural** - R$ 429,90  
+>    - Um violão acessível, com som claro e equilibrado.
 > 
-> 4. **Yamaha C70 Nylon Natural** - R$ 849,90  
->    - Mais sofisticado, mas ainda muito adequado para quem está começando e quer um instrumento mais duradouro.
-> 
-> Se quiser, posso te mostrar detalhes de algum desses modelos! 🎸
+> Se quiser, posso te mostrar mais opções ou detalhes sobre algum! 🎸

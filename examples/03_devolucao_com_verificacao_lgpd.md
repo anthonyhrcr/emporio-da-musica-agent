@@ -2,19 +2,19 @@
 
 - Modelo: `qwen3:8b` via `http://localhost:11434/v1`
 - Relógio da loja: 25/03/2026 10:30 (Campo Grande)
-- Gerado por `scripts/run_examples.py` em 105s. Respostas do modelo sem nenhuma edição.
+- Gerado por `scripts/run_examples.py` em 100s. Respostas do modelo sem nenhuma edição.
 
 **Cliente:** Me arrependi da minha compra, posso devolver meu pedido?
 
 **Lia:**
 
-> Claro, eu entendo que você pode ter se arrependido da compra. Para verificar se é possível realizar a devolução, preciso do **telefone com DDD** ou **e-mail** usado no cadastro. Com essas informações, posso verificar o status do seu pedido e as opções de devolução. Você pode me passar esses detalhes? 😊
+> Claro! Para verificar as opções de devolução, preciso do seu telefone com DDD ou e-mail usado na compra. Pode me informar? assim posso verificar o status do seu pedido e as possibilidades de devolução. 😊
 
 **Cliente:** É o pedido 7. Meu telefone é (67) 98888-1234
 
-<details><summary>🔧 Ferramentas consultadas: <code>lookup_orders</code></summary>
+<details><summary>🔧 Ferramentas consultadas: <code>check_return_options</code></summary>
 
-`lookup_orders({"numero_pedido": "7", "contato": "(67) 98888-1234"})`
+`check_return_options({"contato": "(67) 98888-1234", "motivo": "arrependimento", "numero_pedido": "7"})`
 
 ```json
 {
@@ -27,31 +27,44 @@
 
 **Lia:**
 
-> Desculpe, não consegui encontrar o seu cadastro com o telefone informado. Para verificar o status do seu pedido e as opções de devolução, preciso do **telefone com DDD** ou **e-mail** usado na compra. Você pode me passar esses detalhes novamente? 😊
+> Desculpe, não consegui encontrar o seu cadastro com o telefone informado. Pode me dizer o e-mail usado na compra? Assim posso verificar o status do seu pedido e as opções de devolução. 😊
 
 **Cliente:** Ah, desculpa, comprei com o e-mail leticia.rocha@jmail.com
 
-<details><summary>🔧 Ferramentas consultadas: <code>lookup_orders</code></summary>
+<details><summary>🔧 Ferramentas consultadas: <code>check_return_options</code></summary>
 
-`lookup_orders({"contato": "leticia.rocha@jmail.com", "numero_pedido": "7"})`
+`check_return_options({"contato": "leticia.rocha@jmail.com", "motivo": "arrependimento", "numero_pedido": "7"})`
 
 ```json
 {
  "verificado": true,
  "cliente": "Letícia",
- "pedidos": [
-  {
-   "numero": 7,
-   "data_da_compra": "03/02/2026",
-   "status": "entregue",
-   "itens": [
-    "1x Shelby SU-21S Soprano Sunburst"
-   ],
-   "total": "R$ 159,90",
-   "pagamento": "cartão de crédito em 3x",
-   "codigo_de_rastreio": "BRKR1122334BR",
-   "previsao_de_entrega": "17/02/2026"
-  }
+ "pedido": {
+  "numero": 7,
+  "data_da_compra": "03/02/2026",
+  "status": "entregue",
+  "itens": [
+   "1x Shelby SU-21S Soprano Sunburst (Ukuleles)"
+  ],
+  "total": "R$ 159,90",
+  "pagamento": "cartão de crédito em 3x",
+  "codigo_de_rastreio": "BRKR1122334BR",
+  "previsao_de_entrega": "17/02/2026"
+ },
+ "data_de_referencia": "25/03/2026",
+ "data_de_recebimento_considerada": "17/02/2026 (previsão de entrega registrada; o sistema não guarda a data real de recebimento)",
+ "dias_desde_o_recebimento": 36,
+ "dias_desde_a_compra": 50,
+ "itens_nunca_elegiveis_para_troca": "instrumentos personalizados ou com ajuste sob encomenda; itens de liquidação com aviso de 'venda final'; boquilhas de sopro (seção 4.4). O sistema não registra essas marcações: confirme com o cliente.",
+ "motivo": "arrependimento (seção 4.1)",
+ "elegivel": false,
+ "prazo": "até 7 dias corridos após o recebimento — ia até 24/02/2026",
+ "outras_opcoes": [
+  "garantia legal contra defeitos (90 dias do recebimento, seção 8.1): vale até 18/05/2026",
+  "garantia do fabricante: de 6 meses a 2 anos, conforme o certificado do produto (seção 8.2)"
+ ],
+ "prazos_ja_encerrados": [
+  "troca direta na loja por defeito de fabricação (30 dias da compra, seção 4.2): encerrou em 05/03/2026"
  ]
 }
 ```
@@ -60,13 +73,12 @@
 
 **Lia:**
 
-> Olá, Letícia! 😊
+> Letícia, infelizmente, o prazo para devolução por arrependimento já passou. O prazo é de **7 dias corridos após o recebimento**, que encerrou em **24/02/2026**. 
 > 
-> Verifiquei o status do seu pedido número 7. O pedido foi **entregue** no dia 17/02/2026, com o produto **Shelby SU-21S Soprano Sunburst**. Como já foi entregue, infelizmente **não é possível realizar a devolução** por arrependimento. 
+> Mas não se preocupe! Você ainda pode utilizar a **garantia legal contra defeitos**, que é válida por **90 dias a partir do recebimento** (até **18/05/2026**). Se o produto estiver com algum defeito, pode solicitar a troca ou reembolso.
 > 
-> Se houver algum problema com o produto, como defeito ou não atender as expectativas, podemos conversar sobre a **troca ou garantia**. 
-> 
-> Precisa de ajuda com algo específico? 🎸
+> Se quiser, posso ajudar a verificar se o produto está dentro do prazo da garantia do fabricante também. 😊  
+> Quer que eu faça isso?
 
 **Cliente:** Na verdade o ukulele veio com um defeito no traste. O que eu faço?
 
@@ -83,7 +95,7 @@
   "data_da_compra": "03/02/2026",
   "status": "entregue",
   "itens": [
-   "1x Shelby SU-21S Soprano Sunburst"
+   "1x Shelby SU-21S Soprano Sunburst (Ukuleles)"
   ],
   "total": "R$ 159,90",
   "pagamento": "cartão de crédito em 3x",
@@ -106,12 +118,8 @@
 
 **Lia:**
 
-> Olá, Letícia! 😊
+> Letícia, entendi! O ukulele veio com um defeito no traste, e isso está dentro da **garantia legal de 90 dias** (até **18/05/2026**). 
 > 
-> Entendi que o seu ukulele **Shelby SU-21S Soprano Sunburst** veio com um **defeito no traste**. Infelizmente, como o pedido já foi entregue há mais de 30 dias, **não é possível trocar por outro modelo** diretamente, mas **está dentro da garantia legal de 90 dias** (até 18/05/2026). 
+> Agora, para resolver isso, precisamos **registar o caso com a equipe da loja**. Vou encaminhar para eles e te informarei o protocolo assim que recebermos a resposta. 😊
 > 
-> Vamos resolver isso! Para que possamos intermediar com o fabricante e garantir a solução, preciso que você **registre o defeito** com a nossa equipe. Vou encaminhar o caso para a equipe de atendimento, que entrará em contato com você para orientar o próximo passo.
-> 
-> Você pode me passar o **telefone com DDD** ou **e-mail** para que possamos cadastrar o protocolo? 😊
-> 
-> Aguardo sua resposta! 🎸
+> Quer que eu faça isso agora?
